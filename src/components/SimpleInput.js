@@ -1,51 +1,62 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useInput from "../hooks/use-input";
 
 const SimpleInput = (props) => {
-  const [enteredName, setEnteredName] = useState("");
+  const {
+    value: enteredName,
+    isValid: setEnteredNameIsValid,
+    hasError: nameInputHasError,
+    valueChangedHandler: nameChangedHandler,
+    inputBlurHandler: nameBlurHandler,
+    reset: resetNameInput,
+    // passes the value as a function below...
+    // mind bending hey..
+    // yep
+  } = useInput((value) => value.trim() !== "");
+
   const [enteredEmail, setEnteredEmail] = useState("");
   // const [enterNameIsValid, setEnteredNameIsValid] = useState(false);
-  const [enterNameTouched, setEnteredNameTouched] = useState(false);
-  const [enterEmailTouched, setEnterEmailTouched] = useState(false);
+  // const [enterNameTouched, setEnteredNameTouched] = useState(false);
+  // const [enterEmailTouched, setEnterEmailTouched] = useState(false);
   // const [formIsValid, setFormIsValid] = useState(false);
 
-  const enterNameIsValid = enteredName.trim() !== "";
   const enterEmailIsValid = enteredEmail.includes("@");
   //
-  const nameInputIsInvalid = !enterNameIsValid && enterNameTouched;
+
   const emailInputIsInvalid = !enterEmailIsValid && enterEmailTouched;
 
   const inputChangeHandler = (event) => {
     const input = event.target.id;
 
-    // case it baby
-    switch (input) {
-      case "name":
-        setEnteredName(event.target.value);
-        console.log("name");
-        break;
-      case "email":
-        setEnteredEmail(event.target.value);
-        console.log("email");
-        break;
-      default:
-        console.log("Something Broken Baby");
-    }
+    //   // case it baby
+    //   switch (input) {
+    //     case "name":
+    //       setEnteredName(event.target.value);
+    //       console.log("name");
+    //       break;
+    //     case "email":
+    //       setEnteredEmail(event.target.value);
+    //       console.log("email");
+    //       break;
+    //     default:
+    //       console.log("Something Broken Baby");
+    //   }
   };
 
-  const inputBlurHandler = (event) => {
-    const input = event.target.id;
-    // case it baby
-    switch (input) {
-      case "name":
-        setEnteredNameTouched(true);
-        break;
-      case "email":
-        setEnterEmailTouched(true);
-        break;
-      default:
-        console.log("Something Broken Baby");
-    }
-  };
+  // const inputBlurHandler = (event) => {
+  //   const input = event.target.id;
+  //   // case it baby
+  //   switch (input) {
+  //     case "name":
+  //       setEnteredNameTouched(true);
+  //       break;
+  //     case "email":
+  //       setEnterEmailTouched(true);
+  //       break;
+  //     default:
+  //       console.log("Something Broken Baby");
+  //   }
+  // };
 
   let formIsValid = false;
 
@@ -70,15 +81,15 @@ const SimpleInput = (props) => {
 
   const formSubmissionHandler = (event) => {
     event.preventDefault();
-    setEnteredNameTouched(true);
+    // setEnteredNameTouched(true);
     if (!enterNameIsValid && !enterEmailIsValid) {
       return;
     }
-
+    resetNameInput();
     setEnteredEmail("");
-    setEnteredName("");
+    // setEnteredName("");
 
-    setEnteredNameTouched(false);
+    // setEnteredNameTouched(false);
     setEnterEmailTouched(false);
   };
 
@@ -98,17 +109,17 @@ const SimpleInput = (props) => {
           // ref={nameInputRef}
           type="text"
           id="name"
-          onChange={inputChangeHandler}
-          onBlur={inputBlurHandler}
+          onChange={nameChangedHandler}
+          onBlur={nameBlurHandler}
           value={enteredName}
         />
-        {nameInputIsInvalid && <p>Name field can't be empty</p>}
+        {nameInputHasError && <p>Name field can't be empty</p>}
       </div>
       <div className={emailInputClasses}>
         <label htmlFor="email">Your Email</label>
         <input
           // ref={nameInputRef}
-          type="text"
+          type="email"
           id="email"
           onChange={inputChangeHandler}
           onBlur={inputBlurHandler}
