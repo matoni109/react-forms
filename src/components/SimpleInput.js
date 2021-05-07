@@ -1,39 +1,92 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 const SimpleInput = (props) => {
-  const nameInputRef = useRef("");
   const [enteredName, setEnteredName] = useState("");
-  const [enterNameIsValid, setEnteredNameIsValid] = useState(false);
+  const [enteredEmail, setEnteredEmail] = useState("");
+  // const [enterNameIsValid, setEnteredNameIsValid] = useState(false);
   const [enterNameTouched, setEnteredNameTouched] = useState(false);
+  const [enterEmailTouched, setEnterEmailTouched] = useState(false);
+  // const [formIsValid, setFormIsValid] = useState(false);
 
-  const nameInputChangeHandler = (event) => {
-    console.log(event.target.value);
-    setEnteredName(event.target.value);
+  const enterNameIsValid = enteredName.trim() !== "";
+  const enterEmailIsValid = enteredEmail.includes("@");
+  //
+  const nameInputIsInvalid = !enterNameIsValid && enterNameTouched;
+  const emailInputIsInvalid = !enterEmailIsValid && enterEmailTouched;
+
+  const inputChangeHandler = (event) => {
+    const input = event.target.id;
+
+    // case it baby
+    switch (input) {
+      case "name":
+        setEnteredName(event.target.value);
+        console.log("name");
+        break;
+      case "email":
+        setEnteredEmail(event.target.value);
+        console.log("email");
+        break;
+      default:
+        console.log("Something Broken Baby");
+    }
   };
 
-  useEffect(() => {
-    if (enterNameIsValid) {
-      console.log("Name INput is valid");
+  const inputBlurHandler = (event) => {
+    const input = event.target.id;
+    // case it baby
+    switch (input) {
+      case "name":
+        setEnteredNameTouched(true);
+        break;
+      case "email":
+        setEnterEmailTouched(true);
+        break;
+      default:
+        console.log("Something Broken Baby");
     }
-  }, [enterNameIsValid]);
+  };
+
+  let formIsValid = false;
+
+  if (enterNameIsValid && enterEmailIsValid) {
+    formIsValid = true;
+  }
+
+  // useEffect(() => {
+  //   // check all the valids
+  //   if (enterNameIsValid) {
+  //     return setFormIsValid(true);
+  //   }
+
+  //   setFormIsValid(false);
+  // }, [enterNameIsValid]);
+
+  // useEffect(() => {
+  //   if (enterNameIsValid) {
+  //     console.log("Name INput is valid");
+  //   }
+  // }, [enterNameIsValid]);
 
   const formSubmissionHandler = (event) => {
     event.preventDefault();
     setEnteredNameTouched(true);
-    if (enteredName.trim() === "") {
-      setEnteredNameIsValid(false);
+    if (!enterNameIsValid && !enterEmailIsValid) {
       return;
     }
-    setEnteredNameIsValid(true);
-    console.log(enteredName);
-    // const enteredvalue = nameInputRef.current.value;
-    // console.log(enteredvalue);
+
+    setEnteredEmail("");
     setEnteredName("");
+
+    setEnteredNameTouched(false);
+    setEnterEmailTouched(false);
   };
 
-  const nameInputIsInvalid = !enterNameIsValid && enterNameTouched;
-
   const nameInputClasses = nameInputIsInvalid
+    ? "form-control invalid"
+    : "form-control ";
+
+  const emailInputClasses = emailInputIsInvalid
     ? "form-control invalid"
     : "form-control ";
 
@@ -45,13 +98,26 @@ const SimpleInput = (props) => {
           // ref={nameInputRef}
           type="text"
           id="name"
-          onChange={nameInputChangeHandler}
+          onChange={inputChangeHandler}
+          onBlur={inputBlurHandler}
           value={enteredName}
         />
-        {nameInputIsInvalid && <p>Can't be Empty</p>}
+        {nameInputIsInvalid && <p>Name field can't be empty</p>}
+      </div>
+      <div className={emailInputClasses}>
+        <label htmlFor="email">Your Email</label>
+        <input
+          // ref={nameInputRef}
+          type="text"
+          id="email"
+          onChange={inputChangeHandler}
+          onBlur={inputBlurHandler}
+          value={enteredEmail}
+        />
+        {emailInputIsInvalid && <p>Email field can't be empty</p>}
       </div>
       <div className="form-actions">
-        <button>Submit</button>
+        <button disabled={!formIsValid}>Submit</button>
       </div>
     </form>
   );
